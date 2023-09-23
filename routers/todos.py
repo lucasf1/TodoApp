@@ -36,7 +36,7 @@ async def get_all(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    return db.query(Todos).filter(Todos.owner == user.get('id')).all()
+    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 
 @router.get("/todo/{todo_id}", status_code=status.HTTP_200_OK)
@@ -50,7 +50,7 @@ async def read_todo(
 
     todo_model = (db.query(Todos)
                   .filter(Todos.id == todo_id)
-                  .filter(Todos.owner == user.get('id'))
+                  .filter(Todos.owner_id == user.get('id'))
                   .first())
     if todo_model is not None:
         return todo_model
@@ -66,7 +66,7 @@ async def create_todo(
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    todo_model = Todos(**todo_request.model_dump(), owner=user.get('id'))
+    todo_model = Todos(**todo_request.model_dump(), owner_id=user.get('id'))
 
     db.add(todo_model)
     db.commit()
@@ -84,7 +84,7 @@ async def update_todo(
 
     todo_model = (db.query(Todos)
                   .filter(Todos.id == todo_id)
-                  .filter(Todos.owner == user.get('id'))
+                  .filter(Todos.owner_id == user.get('id'))
                   .first())
 
     if todo_model is None:
@@ -110,13 +110,13 @@ async def delete_todo(
 
     todo_model = (db.query(Todos)
                   .filter(Todos.id == todo_id)
-                  .filter(Todos.owner == user.get('id'))
+                  .filter(Todos.owner_id == user.get('id'))
                   .first())
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found.')
 
     (db.query(Todos)
      .filter(Todos.id == todo_id)
-     .filter(Todos.owner == user.get('id'))
+     .filter(Todos.owner_id == user.get('id'))
      .delete())
     db.commit()
