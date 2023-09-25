@@ -83,6 +83,7 @@ class UserRequest(BaseModel):
     last_name: str
     password: str
     role: str
+    phone_number: str
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -97,7 +98,8 @@ async def create_user(
         last_name=create_user_request.last_name,
         role=create_user_request.role,
         hashed_password=bcrypt_context.hash(create_user_request.password),
-        is_active=True
+        is_active=True,
+        phone_number=create_user_request.phone_number
     )
 
     db.add(create_user_model)
